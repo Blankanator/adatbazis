@@ -1,0 +1,3 @@
+SELECT *
+FROM Foglalas
+WHERE UGYFEL_FK = 'laszlo2' AND GYERMEK_SZAM = 0
