@@ -19,8 +19,7 @@ Az email cím tartalmazza a .com karaktersorozatot.
 Beadandó: a megfelelő utasítás
 
 # Válasz ----------
-{ "email": { $regex: /.*\.com.*/ } }
-{ "name": 1, "email": 1, "_id": 0 }
+db.movies.find({ "email": { $regex: /.*\.com.*/ }} , { "name": 1, "email": 1, "_id": 0 })
 
 
 --- 3. Feladat -------
