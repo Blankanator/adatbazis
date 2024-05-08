@@ -1,0 +1,66 @@
+--- 1. Feladat -------
+A MongoDB Atlas-ban (vagy a Compass-ban) navigáljon a sample_mflix adatbázishoz, és kérdezze le a movies gyűjteményt az alábbiak szerint:
+A nyelvek közül a legelső English legyen ÉS
+A film 2 alkalommal lett díjazva (awards.wins)
+Csak a filmek címe, írói, rendezői és az év mezők jelenjenek meg
+Rendezzük sorba a filmeket év szerint csökkenően
+Beadandó: a Filter, Project és a Sort részbe írt kódok
+
+# Válasz ----------
+{ "languages.0": "English", "awards.wins": 2 }
+{ "title": 1, "writers": 1, "directors": 1, "year": 1, "_id": 0 }
+{ "year": -1 }
+
+
+--- 2. Feladat -------
+A MongoDB shell-ben csatlakozzon a sample_mflix adatbázishoz, és kérdezze le a users gyűjteményt az alábbiak szerint:
+Csak a felhasználók neve és email címe jelenjen meg
+Az email cím tartalmazza a .com karaktersorozatot.
+Beadandó: a megfelelő utasítás
+
+# Válasz ----------
+{ "email": { $regex: /.*\.com.*/ } }
+{ "name": 1, "email": 1, "_id": 0 }
+
+
+--- 3. Feladat -------
+A MongoDB shell-ben csatlakozzon a sample_mflix adatbázishoz, és kérdezze le a movies gyűjteményt az alábbiak szerint:
+A lekérdezés feleljen meg a következő SQL lekérdezésnek:
+SELECT rated, AVG(runtime)
+FROM movies
+WHERE year > 1950
+GROUP BY rated
+Beadandó a lekérdező utasítás
+
+# Válasz ----------
+db.movies.aggregate([{$match: {"year": {$gt: 1950}}}, {$group: {_id: "$rated", average_runtime: {$avg: "$runtime"}}}])
+
+
+--- 4. Feladat -------
+Csatlakozzon a Movies adatbázishoz a Neo4J Sandbox-ban (vagy a Desktop-ban), és kérdezze le a következőket:
+Melyik filmben volt a legtöbb szereplő?
+Csak a film címe és a szereplők száma jelenjen meg
+Ötlet (a legegyszerűbb): sorbarendezés és az első elem megjelenítése
+Beadandó: a megfelelő utasítás
+
+# Válasz ----------
+MATCH (p:Person)-[:ACTED_IN]-(m:Movie) 
+RETURN m.title, count(*) 
+ORDER BY count(*) DESC 
+LIMIT 1
+
+
+--- 5. Feladat -------
+A neo4j Sandbox-ban (vagy a Desktop-ban) csatlakozzon a Movies adatbázishoz, és kérdezze le a következő SQL-lekérdezésnek megfelelő adatokat:
+SELECT p.name AS Actor, p.born AS BirthYear, COUNT(m.title) AS NumMoviesActedIn
+FROM Person p
+    JOIN ACTED_IN ai ON p.name = ai.actor_name
+    JOIN Movie m ON ai.movie_title = m.title
+WHERE p.born > 1980
+GROUP BY p.name, p.born
+
+# Válasz ----------
+MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
+WHERE p.born > 1980
+WITH p, COUNT(m.title) AS `NumMoviesActedIn`,p.name AS `Actor`, p.born AS `BirthYear`
+RETURN Actor, BirthYear, NumMoviesActedIn
